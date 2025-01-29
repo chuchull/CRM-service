@@ -1,0 +1,6 @@
+time="2025-01-29T14:01:39+05:00" level=info msg="Logger initialized successfully..."
+time="2025-01-29T14:01:39+05:00" level=info msg="Starting HTTP Server..."
+time="2025-01-29T14:03:06+05:00" level=info msg="CRM: successful login for user admin@mail.ru (CRM name=Administrator Yeti)"
+time="2025-01-29T14:03:06+05:00" level=info msg="User admin@mail.ru successfully logged in via CRM, local JWT issued."
+time="2025-01-29T14:03:13+05:00" level=info msg="CRM: successful login for user admin@mail.ru (CRM name=Administrator Yeti)"
+time="2025-01-29T14:03:13+05:00" level=info msg="User admin@mail.ru successfully logged in via CRM, local JWT issued."
