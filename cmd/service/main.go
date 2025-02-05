@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/chuchull/CRM-service/internal/config"
+	"github.com/chuchull/CRM-service/internal/crm"
 	"github.com/chuchull/CRM-service/internal/logger"
 	"github.com/chuchull/CRM-service/internal/server"
 )
@@ -16,7 +17,7 @@ func main() {
 	}
 
 	// 2. Инициализируем логгер
-	err = logger.InitLogger("../../logs/app.log") // пишем логи в файл logs/app.log
+	err = logger.InitLogger("logs/app.log") // пишем логи в файл logs/app.log
 	if err != nil {
 		log.Fatalf("Cannot init logger: %v", err)
 	}
@@ -24,7 +25,10 @@ func main() {
 
 	logger.Log.Info("Logger initialized successfully...")
 
-	// 3. Запускаем сервер
+	// 3. Инициализируем CRM
+	crm.InitCRM(cfg)
+
+	// 4. Запускаем сервер
 	srv, err := server.NewHTTPServer(cfg)
 	if err != nil {
 		logger.Log.Fatalf("Error initializing server: %v", err)

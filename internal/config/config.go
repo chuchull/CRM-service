@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -12,6 +11,8 @@ type Config struct {
 	CRMApiKey string
 	CRMUrl    string
 	CRMAuth   string
+	CRMlogin  string
+	CRMpasswd string
 }
 
 func LoadConfig() (*Config, error) {
@@ -20,15 +21,11 @@ func LoadConfig() (*Config, error) {
 		JWTSecret: getEnv("JWT_SECRET", "default_secret"),
 
 		CRMApiKey: getEnv("CRM_API_KEY", "ruh3aB5uVDwwQNKkCV83RTqX8Wfwxtc5"),
-		CRMUrl:    getEnv("CRM_URL", "http://127.0.0.1:8000/webservice/WebserviceStandard/Users/Login"),
+		CRMUrl:    getEnv("CRM_URL", "http://127.0.0.1:8000/webservice/WebserviceStandard/"),
 		CRMAuth:   getEnv("Authorization", "Basic dGVzdDoxMjM0NTY3ODk="),
+		CRMlogin:  getEnv("userName", "crm@api.com"),
+		CRMpasswd: getEnv("password", "CRMapi1234#"),
 	}
-
-	// Можно добавить проверки
-	if cfg.JWTSecret == "default_secret" {
-		fmt.Println("Warning: using default JWT secret. Set JWT_SECRET in production.")
-	}
-
 	return cfg, nil
 }
 

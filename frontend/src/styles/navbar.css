@@ -1,0 +1,41 @@
+  /* ===== Navbar ===== */
+  .navbar {
+    height: 50px;
+    background-color: #ffbb00 ;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+
+  
+  .navbar-left,
+  .navbar-center,
+  .navbar-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar-logo img {
+    height: 30px;
+  }
+  
+  .navbar-center h3 {
+    margin: 0;
+    font-size: 1.5em;
+  }
+  
+  .navbar-right button {
+    background: transparent;
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .navbar-right button:hover {
+    background: #fff;
+    color: #007bff;
+  }

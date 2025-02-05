@@ -1,0 +1,47 @@
+.sidebar {
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  width: 200px;
+  border-radius: var(--radius);
+  transition: width 0.3s ease;
+}
+  
+  .sidebar:hover {
+    width: 300px;
+  }
+  
+  .sidebar h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    padding: 5px 0;
+    font-size: 1em;
+  }
+
+
+  /* ===== Buttons ===== */
+.sidebar-button {
+  background-color: white;
+  color: var(--primary-color);
+  border: 2px solid #0033662f;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  border-radius: var(--radius);
+  width: 100%; /* Make the button take the full width of the div */
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+.sidebar-button:hover {
+  background-color: var(--secondary-color);
+  border-color: var(--button-border-color-hover);
+  color: white;
+}

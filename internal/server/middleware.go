@@ -2,40 +2,45 @@ package server
 
 import (
 	"net/http"
-	"strings"
 
-	"github.com/chuchull/CRM-service/internal/auth"
 	"github.com/chuchull/CRM-service/internal/logger"
 	"github.com/gin-gonic/gin"
 )
 
-// AuthMiddleware проверяет JWT
+// AuthMiddleware проверяет лишь присутствие X-TOKEN заголовка
 func (s *Server) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			logger.Log.Warn("Missing Authorization header")
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing Authorization header"})
+		crmToken := c.GetHeader("X-TOKEN")
+		if crmToken == "" {
+			logger.Log.Warn("No X-TOKEN header, unauthorized")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing crm token"})
 			return
 		}
 
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			logger.Log.Warnf("Invalid auth header format: %s", authHeader)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid auth header"})
+		// Опционально: мы можем сделать вызов CRM, чтобы проверить, не просрочен ли токен
+		// например, crm.ValidateTokenCRM(crmToken) -> bool
+		// если expired => 401
+		// (Но если CRM не предоставляет «метод валидации», тогда просто передаём дальше)
+
+		// Сохраняем crmToken в контексте для дальнейшего использования
+		c.Set("crmToken", crmToken)
+		c.Next()
+	}
+}
+
+// CORSMiddleware добавляет необходимые заголовки для CORS
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Authorization, X-TOKEN")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
 			return
 		}
 
-		tokenStr := parts[1]
-		claims, err := auth.ValidateToken(tokenStr, s.cfg.JWTSecret)
-		if err != nil {
-			logger.Log.Warnf("Invalid token: %v", err)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
-			return
-		}
-
-		// Сохраняем claims в контексте
-		c.Set("claims", claims)
 		c.Next()
 	}
 }
