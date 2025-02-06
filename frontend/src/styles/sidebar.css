@@ -1,33 +1,52 @@
 .sidebar {
-  background-color: #fff;
-  border: 1px solid var(--border-color);
-  padding: 1rem;
-  width: 200px;
-  border-radius: var(--radius);
-  transition: width 0.3s ease;
+  background-color: var(--secondary-color);
+  width: 4rem;
+  border-style: none;
+  transition: width 0.7s ease-out;
+  height: 100%;
+  .logo-container img{
+    height: 2rem;
+    transition: height 0.5s ease;
+  }
+  .logo-container h3{
+    white-space: nowrap;
+  }
 }
-  
-  .sidebar:hover {
-    width: 300px;
+.left-con {
+  background-color: var(--secondary-color);
+}
+
+.sidebar:hover {
+  .logo-container img {
+    height: 4rem;
   }
-  
-  .sidebar h3 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+  width: 15rem;
+}
+
+.sidebar.open-status{
+  .logo-container img {
+    height: 4rem;
   }
-  
-  .sidebar ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sidebar ul li {
-    padding: 5px 0;
-    font-size: 1em;
-  }
+  width: 15rem;
+}
 
 
-  /* ===== Buttons ===== */
+.sidebar h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 5px 0;
+  font-size: 1em;
+}
+
+/* ===== Buttons ===== */
 .sidebar-button {
   background-color: white;
   color: var(--primary-color);
@@ -40,8 +59,76 @@
   width: 100%; /* Make the button take the full width of the div */
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
+
 .sidebar-button:hover {
   background-color: var(--secondary-color);
   border-color: var(--button-border-color-hover);
   color: white;
 }
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  background-color: #ffbb00;
+  height: 4rem;
+}
+.logo-container h3{
+  margin: 10px;
+  font-size: 1rem;
+}
+
+.accordion-item {
+  background-color: var(--primary-color);
+}
+
+.accordion-header {
+  display: flex;           /* Добавляем flex */
+  align-items: center;     /* Центрируем по вертикали */
+  background-color: var(--secondary-color);
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+.accordion-header img{
+  height: 2rem;
+}
+
+/* Прячем текст */
+.accordion-header span {
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+
+/* Показываем текст при ховере на боковую панель */
+.sidebar:hover .accordion-header span {
+  opacity: 1;
+}
+
+.accordion-header.active {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+.accordion-header:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.accordion-content {
+  background-color: #f9f9f9;
+}
+/* ===== Accordion Content Styles ===== */
+.module-item{
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background-color: #fff;
+  transition: background-color 0.3s ease;  
+}
+.module-item:hover{
+  background-color: #8db6f9;
+}
+

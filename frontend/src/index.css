@@ -1,7 +1,15 @@
 /* src/index.css */
-@import './styles/dc-style.css';
+@import './styles/normalize.css';
 @import './styles/navbar.css';
 @import './styles/sidebar.css';
 @import './styles/dc-style.css';
 @import './styles/psblock.css';
 @import './styles/login.css';
+
+.main-con {
+    display: flex;
+    height: 100vh;
+}
+.right-con {
+    flex: 1;
+}

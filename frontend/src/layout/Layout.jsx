@@ -59,25 +59,28 @@ export default function Layout() {
   };
 
   return (
-    <div className="layout-container">
-      {/* Navbar – главный, находится сверху */}
-      <Navbar />
-
-      {/* Область с Sidebar, главным контентом и PSBlock */}
-      <div className="layout-body">
+    <div className="main-con">
+      {/* Левый столбец – Sidebar на всю высоту */}
+      <div className="left-con">
         <Sidebar onSelectModule={handleModuleSelect} />
-        <div className="layout-content">
-          {recordsData ? (
-            <>
-              <h3>Records for module: {selectedModuleKey}</h3>
-              <RecordsTable recordsData={recordsData} />
-            </>
-          ) : (
-            // Можно оставить Outlet для навигации по другим страницам
-            <Outlet />
-          )}
-        </div>
-        <PSBlock />
+      </div>
+
+      {/* Правый столбец – основной контент */}
+      <div className="right-con">
+        <Navbar />
+        <div className="layout-body">
+          <div className="layout-content">
+            {recordsData ? (
+              <>
+                <h3>Records for module: {selectedModuleKey}</h3>
+                <RecordsTable recordsData={recordsData} />
+              </>
+            ) : (
+              <Outlet />
+            )}
+          </div>
+          <PSBlock />
+        </div> 
       </div>
     </div>
   );

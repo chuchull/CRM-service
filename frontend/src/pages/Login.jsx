@@ -56,7 +56,13 @@ export default function Login() {
             </div>
           </div>
           <div className="form-button">
-            <button className='form-button-button' type="submit">O</button>
+            <button className='form-button-button' type="submit">
+            <img 
+              src="../login.svg"  
+              alt="Logo"
+              className="" 
+            />
+            </button>
           </div>
         </form>
       </div>

@@ -13,14 +13,14 @@
 
 /* ===== Root Variables ===== */
 :root {
-  --primary-color: #003366;       /* Темно-синий - основной цвет */
-  --secondary-color: #005b96;     /* Светлее для hover */
+  --primary-color: #0456A2;       /* Темно-синий - основной цвет */
+  --secondary-color: #F07F1C;     /* Светлее для hover */
   --text-color: #333333;          /* Основной цвет текста */
   --background-color: #f8f8f8;      /* Фоновый цвет */
   --border-color: #dddddd;        /* Цвет границ */
   --link-color: var(--primary-color);
   --radius: 8px;                  /* Округление углов для элементов */
-  --button-border-color-hover: #e5c434;
+  --border-color-for-nav-sidebar: #aa8787; /* Цвет границ для Navbar и Sidebar */
 
 }
 

@@ -1,7 +1,7 @@
 .ps-block {
     background-color: #fff;
-    border: 1px solid var(--border-color);
+    border: 0.1rem solid var(--border-color);
     padding: 1rem;
-    width: 250px;
+    width: 30rem;
     border-radius: var(--radius);
   }

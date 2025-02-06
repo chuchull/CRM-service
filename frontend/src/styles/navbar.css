@@ -1,12 +1,12 @@
   /* ===== Navbar ===== */
   .navbar {
-    height: 50px;
-    background-color: #ffbb00 ;
+    height: 4rem;
+    background-color: #F07F1C ;
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 1rem;
   }
 
   
@@ -17,9 +17,7 @@
     align-items: center;
   }
   
-  .navbar-logo img {
-    height: 30px;
-  }
+
   
   .navbar-center h3 {
     margin: 0;
@@ -30,7 +28,7 @@
     background: transparent;
     border: 1px solid #fff;
     color: #fff;
-    padding: 5px 10px;
+    padding: 0.5rem 1rem;
     cursor: pointer;
     transition: background 0.3s, color 0.3s;
   }
