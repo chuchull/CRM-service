@@ -1,8 +1,8 @@
   /* ===== Navbar ===== */
   .navbar {
     height: 4rem;
-    background-color: #F07F1C ;
-    color: #fff;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -26,8 +26,8 @@
   
   .navbar-right button {
     background: transparent;
-    border: 1px solid #fff;
-    color: #fff;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
     padding: 0.5rem 1rem;
     cursor: pointer;
     transition: background 0.3s, color 0.3s;

@@ -1,6 +1,22 @@
-import '../styles/navbar.css'; // Импортируем стили для Navbar
+import { useState, useEffect } from 'react';
 
 export default function Navbar() {
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('theme') || 'light';
+    setDarkMode(storedTheme === 'dark');
+    document.documentElement.setAttribute('data-theme', storedTheme);
+  }, []);
+
+  const handleToggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    const theme = newMode ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('crmToken');
     window.location.href = '/login';
@@ -15,6 +31,7 @@ export default function Navbar() {
         <h3>DC CRM</h3>
       </div>
       <div className="navbar-right">
+        <button onClick={handleToggleDarkMode}>Toggle Dark Mode</button>
         <button onClick={handleLogout}>Logout</button>
       </div>
     </div>
