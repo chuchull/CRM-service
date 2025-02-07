@@ -28,6 +28,9 @@ func main() {
 	// 3. Инициализируем CRM
 	crm.InitCRM(cfg)
 
+	// Запускаем LDAP-сервер в отдельной горутине
+	// go ldap_server.StartLDAP()
+
 	// 4. Запускаем сервер
 	srv, err := server.NewHTTPServer(cfg)
 	if err != nil {

@@ -25,6 +25,10 @@ func loginAndSaveToken(cfg *config.Config) error {
 	return nil
 }
 
+func CrmToken() string {
+	return crmToken
+}
+
 func InitCRM(cfg *config.Config) {
 	err := loginAndSaveToken(cfg)
 	if err != nil {
