@@ -30,6 +30,10 @@
   width: 15rem;
 }
 
+.sidebar.sidebar.open-status .accordion-header span {
+  opacity: 1;
+}
+
 
 .sidebar h3 {
   font-size: 1.2em;
