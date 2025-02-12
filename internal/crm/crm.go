@@ -32,7 +32,8 @@ func CrmToken() string {
 func InitCRM(cfg *config.Config) {
 	err := loginAndSaveToken(cfg)
 	if err != nil {
-		logger.Log.Fatalf("Failed to login to CRM: %v", err)
+		logger.Log.Errorf("Failed to login to CRM: %v. Продолжаем запуск без CRM.", err)
+		// crmToken остаётся пустым или можно назначить дефолтное значение
 	}
 	go func() {
 		for {
