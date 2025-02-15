@@ -13,3 +13,69 @@
 .right-con {
     flex: 1;
 }
+
+
+
+button {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin: 5px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:first-child {
+  margin-left: 0;
+}
+
+button:last-child {
+  margin-right: 0;
+}
+
+/* Стили для кнопок в режиме редактирования */
+button.save {
+  background-color: #4CAF50;
+  color: white;
+}
+
+button.save:hover {
+  background-color: #45a049;
+}
+
+button.cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+button.cancel:hover {
+  background-color: #d32f2f;
+}
+
+/* Стили для кнопок в обычном режиме */
+button.edit {
+  background-color: #008CBA;
+  color: white;
+}
+
+button.edit:hover {
+  background-color: #0073a6;
+}
+
+button.delete {
+  background-color: #FF5722;
+  color: white;
+}
+
+button.delete:hover {
+  background-color: #e64a19;
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-
+import { Link } from 'react-router-dom';
 export default function Navbar() {
   const [darkMode, setDarkMode] = useState(false);
 
@@ -25,13 +25,19 @@ export default function Navbar() {
   return (
     <div className="navbar">
       <div className="navbar-left">
+        <Link to="/home">
         <link rel="icon" type="image/svg+xml" href="/Logo.svg" />
+        </Link>
       </div>
       <div className="navbar-center">
         <h3>DC CRM</h3>
       </div>
       <div className="navbar-right">
-        <button onClick={handleToggleDarkMode}>Toggle Dark Mode</button>
+        Dark mode
+        <label className="switch">
+          <input type="checkbox" checked={darkMode} onChange={handleToggleDarkMode} />
+          <span className="slider round"></span>
+        </label>
         <button onClick={handleLogout}>Logout</button>
       </div>
     </div>

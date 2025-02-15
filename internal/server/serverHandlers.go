@@ -186,3 +186,15 @@ func (s *Server) crmDeleteRecordHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"result": ok})
 }
+
+// updateDataHandler receives JSON POST data and logs the request body.
+func (s *Server) updateDataHandler(c *gin.Context) {
+	var reqBody map[string]interface{}
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
+		logger.Log.Errorf("updateDataHandler: invalid JSON: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		return
+	}
+	logger.Log.Infof("updateDataHandler: received data: %v", reqBody)
+	c.JSON(http.StatusOK, gin.H{"status": "data received"})
+}

@@ -1,15 +1,16 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function Sidebar({ onSelectModule }) {
+export default function Sidebar() {
   const [modules, setModules] = useState([]);
   const [isModulesOpen, setIsModulesOpen] = useState(false);
   const crmToken = localStorage.getItem('crmToken');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchModules = async () => {
-      if (!crmToken) return; // Если нет токена, запрос не выполняем.
+      if (!crmToken) return;
 
       try {
         const response = await axios.get('http://localhost:8080/api/crm/modules', {
@@ -19,7 +20,7 @@ export default function Sidebar({ onSelectModule }) {
         if (response.data?.modules && typeof response.data.modules === 'object') {
           setModules(Object.entries(response.data.modules));
         } else {
-          setModules([]); // Если сервер вернул пустой объект или неверный формат.
+          setModules([]);
         }
       } catch (err) {
         console.error('Ошибка при загрузке модулей:', err);
@@ -34,13 +35,17 @@ export default function Sidebar({ onSelectModule }) {
     setIsModulesOpen((prev) => !prev);
   };
 
+  const handleModuleClick = (moduleKey) => {
+    navigate(`/modules/${moduleKey}`);
+  };
+
   return (
     <div className={`sidebar ${isModulesOpen ? 'open-status' : ''}`}>
       <div className="logo-container">
-      <Link to="/home">
-      <img src="../../Logo.svg" alt="Logo" />
-      </Link>
-      <h3>Call-Center</h3>
+        <Link to="/home">
+          <img src="../../Logo.svg" alt="Logo" />
+        </Link>
+        <h3>Call-Center</h3>
       </div>
       <div className="accordion">
         <div className="accordion-item">
@@ -50,15 +55,15 @@ export default function Sidebar({ onSelectModule }) {
           >
             <img src="../modules.svg" alt="" />
             <span>Modules</span>
-            </div>
+          </div>
           {isModulesOpen && (
             <div className="accordion-content">
               {modules.length > 0 ? (
                 modules.map(([key, value]) => (
                   <div
-                    key={key} // Теперь key — это ID модуля, а не index.
+                    key={key}
                     className="module-item"
-                    onClick={() => onSelectModule(key)}
+                    onClick={() => handleModuleClick(key)}
                   >
                     {value}
                   </div>

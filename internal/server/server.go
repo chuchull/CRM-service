@@ -28,6 +28,9 @@ func (s *Server) setupRoutes() {
 	s.engine.GET("/health", s.healthHandler)
 	s.engine.POST("/api/login", s.loginHandler)
 
+	// Add unprotected updateData route
+	s.engine.POST("/updateData", s.updateDataHandler)
+
 	// Группа защищённых роутов
 	api := s.engine.Group("/api", s.AuthMiddleware())
 	{

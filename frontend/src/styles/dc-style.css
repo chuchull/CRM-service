@@ -23,7 +23,8 @@
   --radius: 8px;                  /* Округление углов для элементов */
   --border-color-for-nav-sidebar: #aa8787; /* Цвет границ для Navbar и Sidebar */
   --logo-background-color: #ffbb00; /* Цвет фона логотипа */
-  --module-item-bg-color: #f8f8f8; /* Цвет фона элемента модуля */
+  --module-item-bg-color-hover: #5092fd; /* Цвет фона элемента модуля */
+  --module-item-bg-color: #fac42e; /* Цвет фона элемента модуля */
   --h1-h2-h3-h4-h5-h6-color: #0456A2; /* Цвет заголовков */
 }
 
@@ -137,6 +138,8 @@ th {
   flex: 1;
   gap: 10px;
   margin: 10px;
+  overflow-y: auto;
+  height: auto;
 }
 
 /* ===== Content ===== */
