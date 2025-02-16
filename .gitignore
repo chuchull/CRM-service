@@ -13,7 +13,12 @@ dist/
 
 # Go
 go.sum
-#env
+
+# Ignoring .env file
 .env
+
+# Ignoring log files
+logs/app.log
+
 #logs/*
 *.log
