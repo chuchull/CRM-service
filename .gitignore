@@ -10,7 +10,10 @@
 bin/
 build/
 dist/
+
 # Go
 go.sum
 #env
-# .env
+.env
+#logs/*
+*.log

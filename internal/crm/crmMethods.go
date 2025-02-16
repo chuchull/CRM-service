@@ -1,12 +1,26 @@
 package crm
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
+
+	"github.com/chuchull/CRM-service/internal/config"
+	"github.com/chuchull/CRM-service/internal/logger"
 )
 
 // ====== 2) ОБЩИЕ СТРУКТУРЫ (Обёртка response) ======
+// UserData - структура для данных пользователя
+type UserData struct {
+	FirstName           string `json:"first_name"`
+	LastName            string `json:"last_name"`
+	Email               string `json:"email1"`
+	SecondaryPhone      string `json:"phone_crm_extension"`
+	SecondaryPhoneExtra string `json:"phone_crm_extension_extra"`
+	Description         string `json:"description"`
+}
 
 type CRMResponse[T any] struct {
 	Status float64 `json:"status"`
@@ -28,6 +42,58 @@ type RecordsListResult struct {
 type CreateRecordResult struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
+}
+
+// FetchUserDataByID делает запрос для получения данных пользователя по ID
+func FetchUserDataByID(cfg *config.Config, userID string) (*UserData, error) {
+	apiURL := strings.TrimRight(cfg.CRMUrl, "/") + "/Users/Record/" + userID
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		logger.Log.Errorf("FetchUserDataByID: error creating request: %v", err)
+		return nil, err
+	}
+
+	req.Header.Set("X-API-KEY", cfg.CRMApiKey)
+	req.Header.Set("X-TOKEN", CrmToken())
+	req.Header.Set("Authorization", cfg.CRMAuth)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-ENCRYPTED", "0")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		logger.Log.Errorf("FetchUserDataByID: error sending request: %v", err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logger.Log.Errorf("FetchUserDataByID: error reading response body: %v", err)
+		return nil, err
+	}
+
+	var apiResponse struct {
+		Status float64 `json:"status"`
+		Result struct {
+			Fields map[string]string `json:"fields"`
+			Data   UserData          `json:"data"`
+		} `json:"result"`
+	}
+	err = json.Unmarshal(body, &apiResponse)
+	if err != nil {
+		logger.Log.Errorf("FetchUserDataByID: error unmarshalling response: %v", err)
+		return nil, err
+	}
+
+	if apiResponse.Status != 1 {
+		logger.Log.Warnf("FetchUserDataByID: CRM returned status=%.0f", apiResponse.Status)
+		return nil, fmt.Errorf("CRM returned status=%.0f", apiResponse.Status)
+	}
+
+	logger.Log.Infof("%s", apiResponse.Result.Data.Email+" "+apiResponse.Result.Data.Description+" "+apiResponse.Result.Data.SecondaryPhone+" "+apiResponse.Result.Data.SecondaryPhoneExtra)
+	logger.Log.Infof("FetchUserDataByID: successfully fetched user data for userID=%s", userID)
+	return &apiResponse.Result.Data, nil
 }
 
 // ====== 3) Получение СПИСКА МОДУЛЕЙ  ======

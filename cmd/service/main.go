@@ -7,9 +7,16 @@ import (
 	"github.com/chuchull/CRM-service/internal/crm"
 	"github.com/chuchull/CRM-service/internal/logger"
 	"github.com/chuchull/CRM-service/internal/server"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Загрузка .env файла
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Ошибка загрузки .env файла")
+	}
+
 	// 1. Загружаем конфигурацию
 	cfg, err := config.LoadConfig()
 	if err != nil {
@@ -27,9 +34,6 @@ func main() {
 
 	// 3. Инициализируем CRM
 	crm.InitCRM(cfg)
-
-	// Запускаем LDAP-сервер в отдельной горутине
-	// go ldap_server.StartLDAP()
 
 	// 4. Запускаем сервер
 	srv, err := server.NewHTTPServer(cfg)

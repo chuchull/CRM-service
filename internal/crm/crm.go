@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/chuchull/CRM-service/internal/auth"
@@ -14,6 +16,8 @@ import (
 )
 
 var crmToken string
+var usersCache = make(map[string]string)
+var mu sync.Mutex
 
 func loginAndSaveToken(cfg *config.Config) error {
 	userResult, err := auth.LoginCRM(cfg.CRMlogin, cfg.CRMpasswd, cfg.CRMApiKey, cfg.CRMUrl, cfg.CRMAuth)
@@ -25,16 +29,68 @@ func loginAndSaveToken(cfg *config.Config) error {
 	return nil
 }
 
-func CrmToken() string {
-	return crmToken
+func fetchAndCacheUsers(cfg *config.Config) error {
+	apiURL := strings.TrimRight(cfg.CRMUrl, "/") + "/Users/RecordsList"
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("X-API-KEY", cfg.CRMApiKey)
+	req.Header.Set("X-TOKEN", crmToken)
+	req.Header.Set("Authorization", cfg.CRMAuth)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-ENCRYPTED", "0")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var apiResponse struct {
+		Status float64 `json:"status"`
+		Result struct {
+			Records map[string]struct {
+				Email string `json:"email1"`
+			} `json:"records"`
+		} `json:"result"`
+	}
+	err = json.Unmarshal(body, &apiResponse)
+	if err != nil {
+		return err
+	}
+
+	if apiResponse.Status != 1 {
+		return fmt.Errorf("CRM returned status=%.0f", apiResponse.Status)
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	for id, record := range apiResponse.Result.Records {
+		usersCache[id] = record.Email
+	}
+	logger.Log.Infof("Users cached successfully: %v", usersCache)
+	return nil
 }
 
 func InitCRM(cfg *config.Config) {
 	err := loginAndSaveToken(cfg)
 	if err != nil {
 		logger.Log.Errorf("Failed to login to CRM: %v. Продолжаем запуск без CRM.", err)
-		// crmToken остаётся пустым или можно назначить дефолтное значение
 	}
+
+	err = fetchAndCacheUsers(cfg)
+	if err != nil {
+		logger.Log.Errorf("Failed to fetch and cache users: %v", err)
+	}
+
 	go func() {
 		for {
 			time.Sleep(24 * time.Hour)
@@ -42,8 +98,35 @@ func InitCRM(cfg *config.Config) {
 			if err != nil {
 				logger.Log.Errorf("Failed to refresh CRM token: %v", err)
 			}
+
+			err = fetchAndCacheUsers(cfg)
+			if err != nil {
+				logger.Log.Errorf("Failed to fetch and cache users: %v", err)
+			}
 		}
 	}()
+}
+
+func CrmToken() string {
+	return crmToken
+}
+
+func GetCachedUsers() map[string]string {
+	mu.Lock()
+	defer mu.Unlock()
+	return usersCache
+}
+
+// New function to get user ID by email
+func GetUserIDByEmail(email string) (string, error) {
+	mu.Lock()
+	defer mu.Unlock()
+	for id, cachedEmail := range usersCache {
+		if cachedEmail == email {
+			return id, nil
+		}
+	}
+	return "", fmt.Errorf("user with email %s not found", email)
 }
 
 // ====== 9) ВСПОМОГАТЕЛЬНАЯ doCRMRequest  ======

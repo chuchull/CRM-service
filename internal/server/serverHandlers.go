@@ -14,6 +14,7 @@ import (
 // 1) Авторизация /login
 // ----------------------------------------------------------------------
 
+// loginHandler - обработчик маршрута /api/login
 func (s *Server) loginHandler(c *gin.Context) {
 	var body struct {
 		Username string `json:"username"`
@@ -25,7 +26,23 @@ func (s *Server) loginHandler(c *gin.Context) {
 		return
 	}
 
-	// Идём в CRM
+	// 1. Находим ID пользователя по email из кэша
+	userID, err := crm.GetUserIDByEmail(body.Username)
+	if err != nil {
+		logger.Log.Warnf("User not found in cache: %v", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
+		return
+	}
+
+	// 2. Делаем запрос для получения данных пользователя по ID
+	userData, err := crm.FetchUserDataByID(s.cfg, userID)
+	if err != nil {
+		logger.Log.Errorf("Failed to fetch user data: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch user data"})
+		return
+	}
+
+	// 3. Логинимся для получения токена
 	userResult, err := auth.LoginCRM(body.Username, body.Password, s.cfg.CRMApiKey, s.cfg.CRMUrl, s.cfg.CRMAuth)
 	if err != nil {
 		logger.Log.Warnf("CRM login failed for user=%s: %v", body.Username, err)
@@ -33,18 +50,17 @@ func (s *Server) loginHandler(c *gin.Context) {
 		return
 	}
 
-	// Выдаём локальный JWT
-	// jwtToken, err := auth.GenerateJWT(body.Username, s.cfg.JWTSecret)
-	// if err != nil {
-	// 	logger.Log.Errorf("Error generating JWT: %v", err)
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "could not generate token"})
-	// 	return
-	// }
-
-	logger.Log.Infof("User %s successfully logged in. CRM name=%s", body.Username, userResult.Name)
+	// 4. Возвращаем необходимые данные в ответе
 	c.JSON(http.StatusOK, gin.H{
-		"X-TOKEN": userResult.Token, // CRM токен
-		"result":  userResult,
+		"first_name":            userData.FirstName,
+		"last_name":             userData.LastName,
+		"email":                 userData.Email,
+		"secondary_phone":       userData.SecondaryPhone,
+		"secondary_phone_extra": userData.SecondaryPhoneExtra,
+		"description":           userData.Description,
+		"token":                 userResult.Token,
+		"api_key":               s.cfg.CRMApiKey,
+		"authorization":         s.cfg.CRMAuth,
 	})
 }
 

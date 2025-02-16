@@ -2,7 +2,10 @@ module github.com/chuchull/CRM-service
 
 go 1.23.5
 
-require github.com/gin-gonic/gin v1.10.0
+require (
+	github.com/gin-gonic/gin v1.10.0
+	github.com/joho/godotenv v1.5.1
+)
 
 require github.com/nmcclain/asn1-ber v0.0.0-20170104154839-2661553a0484 // indirect
 
