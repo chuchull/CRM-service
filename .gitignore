@@ -5,20 +5,16 @@
 *.dll
 *.so
 *.dylib
-
+*.log
 # Output of build tools
 bin/
 build/
 dist/
-
 # Go
 go.sum
-
 # Ignoring .env file
 .env
-
 # Ignoring log files
 logs/app.log
 
-#logs/*
-*.log
+
