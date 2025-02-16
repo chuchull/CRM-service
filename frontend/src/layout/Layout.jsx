@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import PSBlock from './PSBlock';
-import '../index.css';
+// import '../index.css';
 
 export default function Layout() {
   return (

@@ -139,7 +139,7 @@ th {
   gap: 10px;
   margin: 10px;
   overflow-y: auto;
-  height: auto;
+  height: 91%;
 }
 
 /* ===== Content ===== */
