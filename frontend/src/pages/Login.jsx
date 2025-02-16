@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -15,10 +16,22 @@ export default function Login() {
         username,
         password
       });
-      if (response.data.result.token) {
-        localStorage.setItem('crmToken', response.data.result.token);
-        navigate('/home');
-      }
+
+      const { api_key, authorization, description, email, first_name, last_name, secondary_phone, secondary_phone_extra, token } = response.data;
+
+      // Сохраняем данные в сессионные куки
+      Cookies.set('api_key', api_key, { expires: 1 });
+      Cookies.set('authorization', authorization, { expires: 1 });
+      Cookies.set('description', description, { expires: 1 });
+      Cookies.set('email', email, { expires: 1 });
+      Cookies.set('first_name', first_name, { expires: 1 });
+      Cookies.set('last_name', last_name, { expires: 1 });
+      Cookies.set('secondary_phone', secondary_phone, { expires: 1 });
+      Cookies.set('secondary_phone_extra', secondary_phone_extra, { expires: 1 });
+      Cookies.set('token', token, { expires: 1 });
+
+      // Перенаправляем на домашнюю страницу
+      navigate('/home');
     } catch (err) {
       setError('Invalid credentials');
     }
