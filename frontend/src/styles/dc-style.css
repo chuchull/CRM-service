@@ -118,6 +118,15 @@ td {
   text-align: left;
 }
 
+tr {
+  background-color: var(--background-color);
+  transition: background-color 0.3s;
+}
+
+tr:hover{
+  background-color: var(--module-item-bg-color-hover);
+}
+
 th {
   background-color: var(--primary-color);
   color: var(--text-color);

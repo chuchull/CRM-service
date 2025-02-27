@@ -1,11 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getToken } from '../utils/auth';
 
 export default function Sidebar() {
   const [modules, setModules] = useState([]);
   const [isModulesOpen, setIsModulesOpen] = useState(false);
-  const crmToken = localStorage.getItem('crmToken');
+  const crmToken = getToken();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,17 +36,17 @@ export default function Sidebar() {
     setIsModulesOpen((prev) => !prev);
   };
 
-  const handleModuleClick = (moduleKey) => {
-    navigate(`/modules/${moduleKey}`);
+  const handleModuleClick = (moduleKey, moduleName) => {
+    navigate(`/modules/${moduleKey}`, { state: { moduleName } });
   };
 
   return (
     <div className={`sidebar ${isModulesOpen ? 'open-status' : ''}`}>
       <div className="logo-container">
         <Link to="/home">
-          <img src="../../Logo.svg" alt="Logo" />
+          <img src="/Logo.svg" alt="Логотип" />
         </Link>
-        <h3>Call-Center</h3>
+        <h3>Колл-Центр</h3>
       </div>
       <div className="accordion">
         <div className="accordion-item">
@@ -53,8 +54,8 @@ export default function Sidebar() {
             className={`accordion-header ${isModulesOpen ? 'active' : ''}`}
             onClick={handleToggleModules}
           >
-            <img src="../modules.svg" alt="" />
-            <span>Modules</span>
+            <img src="/modules.svg" alt="" />
+            <span>Модули</span>
           </div>
           {isModulesOpen && (
             <div className="accordion-content">
@@ -63,7 +64,7 @@ export default function Sidebar() {
                   <div
                     key={key}
                     className="module-item"
-                    onClick={() => handleModuleClick(key)}
+                    onClick={() => handleModuleClick(key, value)}
                   >
                     {value}
                   </div>

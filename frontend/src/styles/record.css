@@ -1,0 +1,40 @@
+.record-container {
+    padding: 20px;
+  }
+  
+  .record-details {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 20px;
+    background-color: var(--background-color);
+  }
+  
+  .record-header {
+    margin-bottom: 20px;
+  }
+  
+  .record-fields {
+    margin-bottom: 20px;
+  }
+  
+  .fields-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  
+  .record-field {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background-color: var(--field-bg-color);
+  }
+  
+  .record-field input {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+  }
+  

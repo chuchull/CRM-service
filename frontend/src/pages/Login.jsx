@@ -3,7 +3,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
+
 export default function Login() {
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -23,9 +25,6 @@ export default function Login() {
       Cookies.set('api_key', api_key, { expires: 1 });
       Cookies.set('authorization', authorization, { expires: 1 });
       Cookies.set('description', description, { expires: 1 });
-      Cookies.set('email', email, { expires: 1 });
-      Cookies.set('first_name', first_name, { expires: 1 });
-      Cookies.set('last_name', last_name, { expires: 1 });
       Cookies.set('secondary_phone', secondary_phone, { expires: 1 });
       Cookies.set('secondary_phone_extra', secondary_phone_extra, { expires: 1 });
       Cookies.set('token', token, { expires: 1 });
@@ -33,7 +32,7 @@ export default function Login() {
       // Перенаправляем на домашнюю страницу
       navigate('/home');
     } catch (err) {
-      setError('Invalid credentials');
+      setError('Неверные данные');
     }
   };
 

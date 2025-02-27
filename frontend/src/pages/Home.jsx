@@ -1,10 +1,15 @@
 // src/pages/Home.jsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth, getToken } from '../utils/auth';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
+  useAuth(); // Проверка аутентификации
+
   const [modules, setModules] = useState([]);
-  const crmToken = localStorage.getItem('crmToken');
+  const crmToken = getToken();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!crmToken) {
@@ -28,19 +33,23 @@ export default function Home() {
       }
     } catch (err) {
       console.error(err);
-      alert('Error fetching modules');
+      alert('Ошибка при получении модулей');
     }
   };
 
   return (
     <div>
-      <h2>Home Page</h2>
-      <h3>Available Modules:</h3>
+      <h2>Главная страница</h2>
+      <h3>Доступные модули:</h3>
       <ul>
         {modules.length ? (
-          modules.map((module, index) => <li key={index}>{module}</li>)
+          modules.map(([key, value], index) => (
+            <li key={index} onClick={() => navigate(`/modules/${key}`, { state: { moduleName: value } })} style={{ cursor: 'pointer' }}>
+              {value}
+            </li>
+          ))
         ) : (
-          <li>No modules available</li>
+          <li>Нет доступных модулей</li>
         )}
       </ul>
     </div>

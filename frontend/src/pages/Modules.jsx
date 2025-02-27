@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { getToken } from '../utils/auth';
 
 export default function Modules() {
   const { moduleId } = useParams();
+  const location = useLocation();
+  const moduleName = location.state?.moduleName || moduleId;
   const [recordsData, setRecordsData] = useState(null);
-  const crmToken = localStorage.getItem('crmToken');
+  const crmToken = getToken();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +27,7 @@ export default function Modules() {
         setRecordsData(response.data);
       } catch (err) {
         console.error(err);
-        alert('Error fetching records for module ' + moduleId);
+        alert('Ошибка при получении записей для модуля ' + moduleId);
       }
     };
 
@@ -33,7 +36,7 @@ export default function Modules() {
 
   return (
     <div>
-      <h2>Module: {moduleId}</h2>
+      <h2>Модуль: {moduleName}</h2>
       {recordsData ? (
         <table>
           <thead>

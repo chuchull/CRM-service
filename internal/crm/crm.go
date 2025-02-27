@@ -181,7 +181,7 @@ func doCRMRequest[T any](
 	}
 
 	// --- ЛОГИРУЕМ тело запроса (если нужно) ---
-	if rawBody != nil && len(rawBody) > 0 {
+	if len(rawBody) > 0 {
 		logger.Log.Infof("Request Body: %s", string(rawBody))
 	}
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logout } from '../utils/auth';
 import { Link } from 'react-router-dom';
 export default function Navbar() {
   const [darkMode, setDarkMode] = useState(false);
@@ -18,8 +19,7 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('crmToken');
-    window.location.href = '/login';
+    logout();
   };
 
   return (
@@ -33,12 +33,12 @@ export default function Navbar() {
         <h3>DC CRM</h3>
       </div>
       <div className="navbar-right">
-        Dark mode
+        Темная тема
         <label className="switch">
           <input type="checkbox" checked={darkMode} onChange={handleToggleDarkMode} />
           <span className="slider round"></span>
         </label>
-        <button onClick={handleLogout}>Logout</button>
+        <button onClick={handleLogout}>Выйти</button>
       </div>
     </div>
   );
