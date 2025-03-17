@@ -19,13 +19,16 @@
   --text-color: #333333;          /* Основной цвет текста */
   --background-color: #f8f8f8;      /* Фоновый цвет */
   --border-color: #dddddd;        /* Цвет границ */
-  --link-color: var(--primary-color);
+  --link-color: #0456A2;
   --radius: 8px;                  /* Округление углов для элементов */
   --border-color-for-nav-sidebar: #aa8787; /* Цвет границ для Navbar и Sidebar */
   --logo-background-color: #ffbb00; /* Цвет фона логотипа */
   --module-item-bg-color-hover: #5092fd; /* Цвет фона элемента модуля */
   --module-item-bg-color: #fac42e; /* Цвет фона элемента модуля */
   --h1-h2-h3-h4-h5-h6-color: #0456A2; /* Цвет заголовков */
+  --background-color-for-record-block: rgb(241, 241, 241);
+  --background-color-for-breadcrump: #ff9334;
+
 }
 
 /* Dark theme overrides */
@@ -39,6 +42,10 @@
   --logo-background-color: #838383; /* Цвет фона логотипа */
   --module-item-bg-color-hover: #5092fd; /* Цвет фона элемента модуля */
   --h1-h2-h3-h4-h5-h6-color: #F07F1C; /* Цвет заголовков */
+  --background-color-for-record-block: rgb(50, 50, 50);
+  --link-color: #ff9334;
+  --background-color-for-breadcrump: #0456A2;
+
 }
 
 /* ===== Base Styles ===== */
@@ -66,7 +73,7 @@ p {
 }
 
 a {
-  color: var(--link-color);
+  color: var(--link-color) !important;
   text-decoration: none;
   transition: text-decoration 0.3s;
 }

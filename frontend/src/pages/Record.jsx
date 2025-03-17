@@ -22,6 +22,8 @@ export default function Record() {
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showEmptyFields, setShowEmptyFields] = useState(false);
+  // Состояние для сворачивания/разворачивания блоков
+  const [expandedBlocks, setExpandedBlocks] = useState({});
 
   // Загружаем запись и её структуру
   useEffect(() => {
@@ -51,6 +53,20 @@ export default function Record() {
       setMergedRecord(merged);
     }
   }, [record, structure]);
+
+  // Инициализация состояния сворачивания блоков после получения mergedRecord
+  useEffect(() => {
+    if (mergedRecord) {
+      const newExpanded = {};
+      Object.keys(mergedRecord).forEach(blockName => {
+        const block = mergedRecord[blockName];
+        // Определяем, есть ли хотя бы одно непустое поле
+        const hasData = block.fields.some(field => field.value && field.value !== "");
+        newExpanded[blockName] = hasData; // если есть данные – развернут, иначе свернут
+      });
+      setExpandedBlocks(newExpanded);
+    }
+  }, [mergedRecord]);
 
   // Запрос для получения данных записи
   const fetchRecord = async () => {
@@ -119,7 +135,7 @@ export default function Record() {
         `http://127.0.0.1:8000/webservice/WebserviceStandard/${moduleName}/RecordHistory/${recordId}`,
         { headers: getHeaders() }
       );
-      setHistoryData(Object.values(response.data.result.records || {}));
+      setHistoryData(Object.values(response.data.result.records || {}).reverse());
     } catch (error) {
       console.error('Ошибка загрузки истории:', error);
     }
@@ -141,20 +157,19 @@ export default function Record() {
     'X-ENCRYPTED': '1',
     'x-response-params': '["blocks"]',
   });
+
   // Функция для объединения данных записи и структуры, сгруппированная по блокам
   const mergeRecordAndStructure = (record, structureData) => {
-    // structureData уже является объектом из response.data.result,
-    // поэтому нет необходимости обращаться к structureData?.result
     const fieldDefs = structureData?.fields;
     const blocks = structureData?.blocks;
-    
+
     if (!fieldDefs || !blocks) {
       console.error("Неверная структура: отсутствуют поля или блоки", structureData);
       return {};
     }
-  
+
     const mergedData = {};
-  
+
     // Инициализируем объект для каждого блока
     Object.keys(blocks).forEach((blockId) => {
       const block = blocks[blockId];
@@ -163,13 +178,13 @@ export default function Record() {
         fields: [],
       };
     });
-  
+
     // Распределяем поля по блокам
     Object.entries(fieldDefs).forEach(([fieldName, fieldDef]) => {
       const blockId = fieldDef.blockId;
       const block = blocks[blockId];
       const fieldValue = record.data[fieldName] || "";
-      
+
       if (block) {
         mergedData[block.name].fields.push({
           name: fieldName,
@@ -190,11 +205,10 @@ export default function Record() {
         });
       }
     });
-  
+
     return mergedData;
   };
-  
-    
+
   // Функция для рендеринга значения поля с учётом его типа и возможных ссылок
   const renderFieldValue = (key, value) => {
     if (!value || value === "") return "—"; // Пустое значение
@@ -214,7 +228,7 @@ export default function Record() {
           </a>
         );
       }
-      return JSON.stringify(value, null, 2); // Вывод объекта в формате JSON
+      return JSON.stringify(value, null, 2);
     }
     if (typeof value === "boolean") return value ? "✅ Да" : "❌ Нет";
     return value;
@@ -223,13 +237,47 @@ export default function Record() {
   // Если данные ещё не загружены, отображаем загрузку
   if (loading || !record || !structure || !mergedRecord) return <p>Загрузка...</p>;
 
+  // Сортируем блоки: сначала те, у которых есть непустые поля, затем пустые
+  const sortedBlocks = Object.entries(mergedRecord).sort(
+    ([nameA, blockA], [nameB, blockB]) => {
+      const hasDataA = blockA.fields.some(field => field.value && field.value !== "");
+      const hasDataB = blockB.fields.some(field => field.value && field.value !== "");
+      if (hasDataA === hasDataB) return 0;
+      return hasDataA ? -1 : 1;
+    }
+  );
+
+  // Обработчик переключения состояния блока (свернуть/развернуть)
+  const toggleBlock = (blockName) => {
+    setExpandedBlocks(prev => ({
+      ...prev,
+      [blockName]: !prev[blockName],
+    }));
+  };
+  const getLabel = (key) => {
+    switch (key) {
+      case 'targetModule':
+        return 'Системное имя модуля';
+      case 'targetModuleLabel':
+        return 'Модуль';
+      case 'targetLabel':
+        return 'Название';
+      default:
+        return key; // или любое другое значение по умолчанию
+    }
+  };
+  
+
   return (
     <div className="record-container">
-      <h2>{moduleName} — ID {recordId}</h2>
+      <h2>{record.name} — ID {recordId}</h2>
+      <h3>{record.fields.assigned_user_id}: {record.data.assigned_user_id}</h3>
+      <p>Модуль: {moduleName}</p>
+      
 
       <Tabs>
         <TabList>
-          <Tab>Карточка {moduleName}</Tab>
+          <Tab>Карточка {'"'+record.name+'"'}</Tab>
           {relatedModules.map(mod => (
             <Tab key={mod.relatedModuleName}>{mod.label}</Tab>
           ))}
@@ -239,30 +287,39 @@ export default function Record() {
         {/* Вкладка с основной информацией, сгруппированной по блокам */}
         <TabPanel>
           <div className="record-details">
-            {Object.entries(mergedRecord).map(([blockName, block]) => {
+            {sortedBlocks.map(([blockName, block]) => {
               const fieldsToDisplay = showEmptyFields
                 ? block.fields
                 : block.fields.filter(field => field.value && field.value !== "");
+
               return (
-                <div key={blockName}>
-                  <h3>{blockName}</h3>
-                  {fieldsToDisplay.length > 0 ? (
-                    <table className="record-table">
-                      <tbody>
-                        {fieldsToDisplay.map((field, index) => (
-                          <tr key={index}>
-                            <td className="record-label">
-                              <strong>{field.label}:</strong>
-                            </td>
-                            <td className="record-value">
-                              {renderFieldValue(field.name, field.value)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <p>Нет данных</p>
+                <div key={blockName} className="record-block">
+                  <h3 
+                    className="block-header" 
+                    onClick={() => toggleBlock(blockName)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {blockName} {expandedBlocks[blockName] ? '▼' : '►'}
+                  </h3>
+                  {expandedBlocks[blockName] && (
+                    fieldsToDisplay.length > 0 ? (
+                      <table className="record-table">
+                        <tbody>
+                          {fieldsToDisplay.map((field, index) => (
+                            <tr key={index}>
+                              <td className="record-label">
+                                <strong>{field.label}:</strong>
+                              </td>
+                              <td className="record-value">
+                                {renderFieldValue(field.name, field.value)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p>Нет данных</p>
+                    )
                   )}
                 </div>
               );
@@ -324,23 +381,35 @@ export default function Record() {
             {historyData.length > 0 ? (
               historyData.map((item, index) => (
                 <div key={index} className="history-event">
-                  <span className="history-time">{item.time}</span>
-                  <strong className="history-owner">{item.owner}</strong>
-                  <span className={`history-status ${item.status}`}>{item.status}</span>
-                  {Object.entries(item.data).map(([key, change]) => (
-                    <div key={key} className="history-change">
-                      <strong>{change.label}:</strong>
-                      {change.from && change.to ? (
-                        <span className="history-change-value">
-                          {change.from} → {change.to}
-                        </span>
-                      ) : (
-                        <span className="history-new-value">
-                          {change.value || change.targetLabel}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                  <span className="history-time"> {item.time} </span>
+                  <strong className="history-owner"> {item.owner} → </strong>
+                  <span className={`history-status ${item.status}`}> {item.status} </span>
+                  {Object.entries(item.data).map(([key, change]) => {
+                    // Если change — объект с полем label, обрабатываем как раньше
+                    if (typeof change === 'object' && change !== null && change.label) {
+                      return (
+                        <div key={key} className="history-change">
+                          <strong> {change.label}: </strong>
+                          {change.from && change.to ? (
+                            <span className="history-change-value">
+                               {change.from} → {change.to}
+                            </span>
+                          ) : (
+                            <span className="history-new-value">
+                               {change.value || change.targetLabel}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    }
+                    // Если change — примитивное значение (например, для событий "добавил")
+                    return (
+                      <div key={key} className="history-change">
+                        <strong>{getLabel(key)}:</strong>
+                        <span className="history-new-value"> {change} </span>
+                      </div>
+                    );
+                  })}
                 </div>
               ))
             ) : (

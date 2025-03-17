@@ -147,11 +147,19 @@ button.delete:hover {
   border-collapse: collapse;
   margin-top: 10px;
 }
+.record-block {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 0.3rem;
+  background-color: var(--background-color-for-record-block);
+}
 
 .record-table td {
   padding: 8px;
   border: 1px solid #ddd;
 }
+
 
 .record-label {
   font-weight: bold;
@@ -181,4 +189,42 @@ button.delete:hover {
   margin-top: 10px;
   border-top: 1px solid #ccc;
   padding-top: 10px;
+}
+
+
+/* Breadcrumbs///////////////////////////////// */
+/* .breadcrumb-nav{
+  padding-left: 0.4rem;
+  border-radius: .5rem;
+  display: inline flow-root;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-color-for-breadcrump);
+} */
+.breadcrumb {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.breadcrumb-item {
+  margin-right: 0.5rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: '>';
+  margin-right: 0.5rem;
+}
+
+.breadcrumb-item a {
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+.breadcrumb-item a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+  color: var(--text-color);
 }

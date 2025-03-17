@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { logout } from '../utils/auth';
 import { Link } from 'react-router-dom';
+import Breadcrumbs from './Breadcrumbs';
 export default function Navbar() {
   const [darkMode, setDarkMode] = useState(false);
 
@@ -25,9 +26,7 @@ export default function Navbar() {
   return (
     <div className="navbar">
       <div className="navbar-left">
-        <Link to="/home">
-        <link rel="icon" type="image/svg+xml" href="/Logo.svg" />
-        </Link>
+        <Breadcrumbs/>
       </div>
       <div className="navbar-center">
         <h3>DC CRM</h3>
