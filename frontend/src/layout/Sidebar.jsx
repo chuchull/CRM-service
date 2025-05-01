@@ -12,14 +12,48 @@ export default function Sidebar() {
   useEffect(() => {
     const fetchModules = async () => {
       if (!crmToken) return;
-
+  
       try {
         const response = await axios.get('http://localhost:8080/api/crm/modules', {
           headers: { 'X-TOKEN': crmToken }
         });
-
+  
         if (response.data?.modules && typeof response.data.modules === 'object') {
-          setModules(Object.entries(response.data.modules));
+          const entries = Object.entries(response.data.modules);
+  
+          // Проверим каждый модуль
+          const validatedModules = await Promise.all(
+            entries.map(async ([key, value]) => {
+              try {
+                const checkResponse = await axios.get(
+                  `http://127.0.0.1:8000/webservice/WebserviceStandard/${key}/RecordsList`,
+                  {
+                    headers: {
+                      'X-TOKEN': crmToken,
+                      'x-api-key': 'ruh3aB5uVDwwQNKkCV83RTqX8Wfwxtc5',
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Basic dGVzdDoxMjM0NTY3ODk=',
+                      'x-row-limit': '1',
+                    },
+                    validateStatus: function (status) {
+                      return status < 500; // не бросать исключение при 502
+                    },
+                  }
+                );
+  
+                if (checkResponse.status === 502) {
+                  return null;
+                }
+  
+                return [key, value];
+              } catch (e) {
+                return null; // В случае ошибки тоже исключаем
+              }
+            })
+          );
+  
+          // Удаляем null
+          setModules(validatedModules.filter(Boolean));
         } else {
           setModules([]);
         }
@@ -28,10 +62,10 @@ export default function Sidebar() {
         alert('Ошибка при загрузке модулей');
       }
     };
-
+  
     fetchModules();
   }, [crmToken]);
-
+  
   const handleToggleModules = () => {
     setIsModulesOpen((prev) => !prev);
   };

@@ -8,6 +8,7 @@ export default function Modules() {
   const location = useLocation();
   const moduleName = location.state?.moduleName || moduleId;
   const [recordsData, setRecordsData] = useState(null);
+  const [privileges, setPrivilegesData] = useState(null);
   const crmToken = getToken();
   const navigate = useNavigate();
 
@@ -24,7 +25,17 @@ export default function Modules() {
             'X-TOKEN': crmToken
           }
         });
+        const privileges = `http://127.0.0.1:8000//webservice/WebserviceStandard/${moduleId}/Privileges`;
+        const sec_response = await axios.get(privileges, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic dGVzdDoxMjM0NTY3ODk=',
+            'x-api-key': 'ruh3aB5uVDwwQNKkCV83RTqX8Wfwxtc5',
+            'X-TOKEN': crmToken
+          }
+        });
         setRecordsData(response.data);
+        setPrivilegesData(sec_response.data);
       } catch (err) {
         console.error(err);
         alert('Ошибка при получении записей для модуля ' + moduleId);
@@ -36,7 +47,12 @@ export default function Modules() {
 
   return (
     <div>
+      <div className='title-main'>
       <h2>Модуль: {moduleName}</h2>
+      {privileges && privileges.result && privileges.result['CreateView'] === true ? (
+        <a href={`${moduleId}/create-record`}>Создать</a>
+      ) : null}
+      </div>
       {recordsData ? (
         <table>
           <thead>

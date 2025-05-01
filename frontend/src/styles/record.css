@@ -37,4 +37,9 @@
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
   }
+  .title-main {
+    display: flex;                /* элементы в одну линию */
+    justify-content: space-between; /* элементы по краям */
+    align-items: center;          /* вертикальное выравнивание по центру */
+  }
   

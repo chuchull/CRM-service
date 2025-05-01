@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Modules from './pages/Modules';
 import Record from './pages/Record';
 import CreateRecord from './pages/cud/CreateRecord';
+import EditRecord from './pages/cud/UpdateRecord';
 import Layout from './layout/Layout';
 import './index.css';
 
@@ -17,7 +18,8 @@ function App() {
           <Route path="home" element={<Home />} />
           <Route path="modules/:moduleId" element={<Modules />} />
           <Route path="modules/:module/record/:recordId" element={<Record />} />
-          <Route path="modules/:module/create" element={<CreateRecord />} />
+          <Route path="modules/:module/create-record" element={<CreateRecord />} />
+          <Route path="modules/:module/edit-record/:recordId" element={<EditRecord />} />
         </Route>
       </Routes>
     </Router>

@@ -7,6 +7,8 @@ import { getToken } from '../../utils/auth';
 const ReferenceModal = ({ referenceModule, crmToken, onSelect, onClose }) => {
   const [recordsData, setRecordsData] = useState(null);
 
+
+
   useEffect(() => {
     const fetchRecords = async () => {
       try {
@@ -89,6 +91,11 @@ const CreateRecord = () => {
   const [fields, setFields] = useState([]);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [blocks, setBlocks] = useState({});
+  const [expandedBlocks, setExpandedBlocks] = useState({});
+  const [showEmptyBlocks, setShowEmptyBlocks] = useState(false);
+
+
   // Состояние для хранения информации о поле, для которого открыт выбор справочной записи
   const [openReferenceField, setOpenReferenceField] = useState(null);
 
@@ -102,6 +109,14 @@ const CreateRecord = () => {
     'Authorization': 'Basic dGVzdDoxMjM0NTY3ODk=',
     'x-api-key': 'ruh3aB5uVDwwQNKkCV83RTqX8Wfwxtc5',
     'X-TOKEN': crmToken,
+    'x-response-params': '["blocks"]'
+  });
+  
+  const getHeadersForSub = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': 'Basic dGVzdDoxMjM0NTY3ODk=',
+    'x-api-key': 'ruh3aB5uVDwwQNKkCV83RTqX8Wfwxtc5',
+    'X-TOKEN': crmToken,
   });
 
   const fetchFields = async () => {
@@ -110,13 +125,47 @@ const CreateRecord = () => {
         `http://127.0.0.1:8000/webservice/WebserviceStandard/${moduleName}/Fields`,
         { headers: getHeaders() }
       );
-      setFields(Object.values(response.data.result.fields || {}));
+      const fieldList = Object.values(response.data.result.fields || {});
+      setFields(fieldList);
+      setBlocks(response.data.result.blocks || {}); // ← сохраняем блоки
       setLoading(false);
+      const grouped = {};
+      fieldList.forEach(field => {
+        const blockId = field.blockId;
+        const blockName = response.data.result.blocks[blockId]?.label || 'Другие поля';
+        if (!grouped[blockName]) grouped[blockName] = [];
+        grouped[blockName].push(field);
+      });
+
+      const expanded = {};
+      Object.entries(grouped).forEach(([blockName, fields]) => {
+        const hasNonEmpty = fields.some(field => formData[field.name]);
+        expanded[blockName] = hasNonEmpty; // по умолчанию открыты те, где есть значения
+      });
+      setExpandedBlocks(expanded);
+
     } catch (error) {
       console.error('Ошибка загрузки полей:', error);
       setLoading(false);
     }
   };
+
+    const groupFieldsByBlocks = () => {
+      const grouped = {};
+    
+      fields.forEach((field) => {
+        const blockId = field.blockId;
+        const blockName = blocks[blockId]?.name || 'Другие поля';
+    
+        if (!grouped[blockName]) {
+          grouped[blockName] = [];
+        }
+        grouped[blockName].push(field);
+      });
+    
+      return grouped;
+    };
+  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -139,12 +188,13 @@ const CreateRecord = () => {
         payload[key] = value;
       }
     });
-  
+    console.log('Отправляемый payload:', payload); // ← вот это добавлено
+
     try {
       const response = await axios.post(
         `http://127.0.0.1:8000/webservice/WebserviceStandard/${moduleName}/Record`,
         payload,
-        { headers: getHeaders() }
+        { headers: getHeadersForSub() }
       );
       console.log('Запись создана:', response.data);
       navigate(`/modules/${moduleName}/record/${response.data.result.id}`);
@@ -299,21 +349,42 @@ const CreateRecord = () => {
     <div className="create-record-container">
       <h2>Создание записи в модуле {moduleName}</h2>
       <form onSubmit={handleSubmit}>
-        {fields.map((field) => (
-          <div key={field.name} className="form-group">
-            <label htmlFor={field.name}>{field.label}</label>
-            {renderField(field)}
+        {Object.entries(groupFieldsByBlocks()).map(([blockName, blockFields]) => (
+          <div key={blockName} className="block-section" style={{ marginBottom: '20px' }}>
+            <h3
+              onClick={() =>
+                setExpandedBlocks(prev => ({
+                  ...prev,
+                  [blockName]: !prev[blockName],
+                }))
+              }
+              style={{ cursor: 'pointer' }}
+            >
+              {expandedBlocks[blockName] ? '▼' : '►'} {blockName}
+            </h3>
+  
+            {expandedBlocks[blockName] && (
+              <div className="block-fields">
+                {blockFields.map((field) => (
+                  <div key={field.name} className="form-group">
+                    <label htmlFor={field.name}>{field.label}</label>
+                    {renderField(field)}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
+  
         <button type="submit">Сохранить</button>
       </form>
+  
       {openReferenceField && (
         <ReferenceModal
           referenceModule={openReferenceField.referenceModule}
           crmToken={crmToken}
           onSelect={(id, record) => {
-            // Сохраняем выбранное значение (id) и отображаемый текст (например, record.name)
-            setFormData((prevData) => ({
+            setFormData(prevData => ({
               ...prevData,
               [openReferenceField.fieldName]: { id, display: record.name || id },
             }));
@@ -323,6 +394,8 @@ const CreateRecord = () => {
       )}
     </div>
   );
+  
+  
 };
 
 export default CreateRecord;

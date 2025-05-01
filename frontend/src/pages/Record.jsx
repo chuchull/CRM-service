@@ -4,7 +4,7 @@ import axios from 'axios';
 import { getToken } from '../utils/auth';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import '../styles/record.css';
+//import '../styles/record.css';
 
 export default function Record() {
   const { module: moduleName, recordId } = useParams();
